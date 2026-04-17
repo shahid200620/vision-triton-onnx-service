@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  triton:
+    image: nvcr.io/nvidia/tritonserver:23.12-py3
+    ports:
+      - "8000:8000"
+      - "8001:8001"
+      - "8002:8002"
+    volumes:
+      - ./model_repository:/models
+    command: tritonserver --model-repository=/models --model-control-mode=poll --repository-poll-secs=10
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/v2/health/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
